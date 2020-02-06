@@ -2,6 +2,7 @@ let utmkeeper = {};
 
 (function(context) {
   let config = {
+    camelCase: true,
     // override page utms with the url utms
     forceOriginUTM: true,
     // fill page forms with the url utms
@@ -46,29 +47,31 @@ let utmkeeper = {};
       queryString = queryString.split('#')[0];
 
       // split our query string into its component parts
-      var arr = queryString.split('&');
+      const arr = queryString.split('&');
 
       for (var i=0; i<arr.length; i++) {
         // separate the keys and the values
-        var a = arr[i].split('=');
+        const a = arr[i].split('=');
 
         // in case params look like: list[]=thing1&list[]=thing2
-        var paramNum = undefined;
-        var paramName = a[0].replace(/\[\d*\]/, function(v) {
+        let paramNum = undefined;
+        let paramName = a[0].replace(/\[\d*\]/, function(v) {
           paramNum = v.slice(1,-1);
           return '';
         });
 
         // set parameter value (use 'true' if empty)
-        var paramValue = typeof a[1] ==='undefined' ? true : a[1];
+        let paramValue = typeof a[1] ==='undefined' ? true : a[1];
 
-        // (optional) keep case consistent
-        if (typeof paramName === 'string') {
-          paramName = paramName.toLowerCase();
-        }
+        // set lowercase if camel case not set
+        if(config.camelCase !== true) {
+          if (typeof paramName === 'string') {
+            paramName = paramName.toLowerCase();
+          }
 
-        if (typeof paramValue === 'string') {
-          paramValue = unescape(paramValue).toLowerCase();
+          if (typeof paramValue === 'string') {
+            paramValue = unescape(paramValue).toLowerCase();
+          }
         }
 
         // extract only if matches the filter and has value
@@ -103,34 +106,36 @@ let utmkeeper = {};
     }
 
     return obj;
-  }
+  };
 
   context.toUrlSearch = function(obj) {
-    var searchUrl = '';
+    let searchUrl = '';
 
-    for (var key in obj) {
-      if (searchUrl != '') {
+    for (const key in obj) {
+      if (searchUrl !== '') {
         searchUrl += '&';
       }
 
       // if its string set the parameter
-      if (typeof obj[key] === 'string') {
-        searchUrl += key + '=' + encodeURIComponent(obj[key]);
-      }
-      // if not string serialize as url array
-      else {
-        for (var i=0; i<obj[key].length; i++) {
-          if (i > 0) {
-            searchUrl += '&';
-          }
+      if (obj.hasOwnProperty(key)) {
+        if (typeof obj[key] === 'string') {
+          searchUrl += key + '=' + encodeURIComponent(obj[key]);
+        }
+        // if not string serialize as url array
+        else {
+          for (let i = 0; i < obj[key].length; i++) {
+            if (i > 0) {
+              searchUrl += '&';
+            }
 
-          searchUrl += key + '[' + i.toString() + ']=' + encodeURIComponent(obj[key][i]);
+            searchUrl += key + '[' + i.toString() + ']=' + encodeURIComponent(obj[key][i]);
+          }
         }
       }
     }
 
     return searchUrl;
-  }
+  };
 
   context.load = function(customConfig) {
     // set custom config
@@ -139,22 +144,22 @@ let utmkeeper = {};
     }
 
     // stores current location search
-    var originSearchObj = Object.assign(
+    const originSearchObj = Object.assign(
         config.utmObject,
         context.extractUrlParams(null, 'utm_')
     );
 
     // for each link at the page
-    for (var link of document.querySelectorAll('a')) {
-      var base = '';
-      var search = '';
-      var hash = '';
-      var href = '';
+    for (const link of document.querySelectorAll('a')) {
+      let base = '';
+      let search = '';
+      let hash = '';
+      let href = '';
       // extract its search parameters to an object
-      var linkSearchObj = context.extractUrlParams(link.getAttribute('href'));
+      const linkSearchObj = context.extractUrlParams(link.getAttribute('href'));
 
       // extract it hash block
-      var hrefSplit = link.getAttribute('href').split('#');
+      let hrefSplit = link.getAttribute('href').split('#');
 
       if (hrefSplit.length > 1) {
         hash = hrefSplit[1];
@@ -176,7 +181,7 @@ let utmkeeper = {};
 
         // merge the two search contents
         // if forceOriginUTM is true, any utm at the links will be overrided
-        var mergedSearchObj = null;
+        let mergedSearchObj = null;
         if (config.forceOriginUTM) {
           mergedSearchObj = Object.assign(linkSearchObj, originSearchObj);
         } else {
@@ -201,9 +206,9 @@ let utmkeeper = {};
 
     // add the utm values to the forms
     if (config.fillForms) {
-      for (var form of document.querySelectorAll('form')) {
-        for (var key in originSearchObj) {
-          var input = form.querySelector('input[name="' + key + '"]');
+      for (const form of document.querySelectorAll('form')) {
+        for (const key in originSearchObj) {
+          let input = form.querySelector('input[name="' + key + '"]');
 
           if (input) {
             // override existing input value

@@ -19,6 +19,7 @@ The `load` function starts **utmkeeper** and makes all the magic and it can rece
 
 ```javascript
 {
+  camelCase: true,
   forceOriginUTM: true,
   fillForms: true,
   utmObject: {},
@@ -26,7 +27,7 @@ The `load` function starts **utmkeeper** and makes all the magic and it can rece
   postLoad: null,
 }
 ```
-
+- **camelCase**: if `false` url parameters are valid ONLY in lower-case form.
 - **forceOriginUTM**: if `true` the url utms of the page will override any utm present at the links and forms
 - **fillForms**: if `true` all forms will be added the utms, if it does not have the inputs for that hidden ones will be created
 - **utmObject**: an `object` where the utms will be stored, you can use it to send initial utm values to the **utmkeeper**, if it collides with a url UTM it will be overridden 
@@ -39,6 +40,7 @@ One example of calling `load` with the post load function will be like this:
 utmkeeper.load({
   forceOriginUTM: true,
   fillForms: true,
+  camelCase: true,
   utmObject: {
     utm_test: 'test',
     parameterA: 'extra-test',
