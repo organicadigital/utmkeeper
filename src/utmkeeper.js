@@ -63,9 +63,9 @@ let utmkeeper = {};
         var paramValue = typeof a[1] ==='undefined' ? true : a[1];
 
         // (optional) keep case consistent
-        if (typeof paramName === 'string') {
-          paramName = paramName.toLowerCase();
-        }
+        //if (typeof paramName === 'string') {
+          //paramName = paramName.toLowerCase();
+        //}
 
         if (typeof paramValue === 'string') {
           paramValue = unescape(paramValue).toLowerCase();
